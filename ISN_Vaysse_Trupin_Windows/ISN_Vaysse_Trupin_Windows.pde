@@ -85,7 +85,7 @@ void draw() {
   switch (etape) //Selon l'étape
   {
   case CONNEXION: //Ecran de connexion
-    scale(width / 1280, height / 752); //Remise à l'échelle du texte...etc... dans le cas où l'écran n'est pas à la bonne taille
+    scale(width / 1280.0f, height / 752.0f, 1); //Remise à l'échelle du texte...etc... dans le cas où l'écran n'est pas à la bonne taille
 
     background(0); //Fond noir, on efface ce qui est déjà affiché pour réécrire au propre
 
@@ -188,6 +188,8 @@ void draw() {
     camera(); //réinitialiser la caméra
     perspective(); //plus de perspective
 
+    scale(width / 1280.0f, height / 752.0f, 1); //Remise à l'échelle du texte...etc... dans le cas où l'écran n'est pas à la bonne taille
+
     /* Timer */
     fill(#D3EFFF);
     stroke(#99C1D8); //couleur des bordures
@@ -211,7 +213,7 @@ void draw() {
     break;
 
   case STATISTIQUES:
-    scale(width / 1280, height / 752);
+    scale(width / 1280.0f, height / 752.0f, 1); //Remise à l'échelle du texte...etc... dans le cas où l'écran n'est pas à la bonne taille
 
     rectMode(NORMAL);
     textAlign(NORMAL, NORMAL);
@@ -458,7 +460,7 @@ void mouseWheel(MouseEvent event) //si la molette bouge
       } else if (event.getAmount() < 0)
       {
         if (info.type < 1) //limite
-        info.type++; 
+          info.type++; 
 
         out.writeByte(101); 
         out.writeInt(info.type); //On prévient le serveur

@@ -4,11 +4,9 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
   {
     super(m_equation, rotationX, rotationY, rotationZ);
     zoneMarche = null;
-    lastA = false;
-    lastR = false;
     bouclier = false;
   }
-  
+
   protected boolean lieAuClient = true;
 
   protected float masse; //en kilo
@@ -78,7 +76,6 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
 
       scoreFrappe = 1;
       bouclier = false;
-
     }
   }
 
@@ -88,67 +85,6 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
   {
     equation = m_equation;
     equationToSend = true;
-  }
-
-  public boolean lastA = false, lastE = false, lastR = false;
-
-  public void action(boolean avance, boolean recule, boolean gauche, boolean droite, boolean A, boolean E, boolean R, int temps) //Que fait le perso
-  {
-    /* On change son équation */
-    if (zoneMarche != null)
-    {
-      Vecteur position = equation.calculPosition(temps).add(zoneMarche.equation.calculPosition(temps).mult(-1));
-      /*Actualiser l'orientation*/
-      Vecteur versOu = new Vecteur(cos(-angleY), 0, sin(-angleY));
-      Vecteur vitesse = new Vecteur(0, 0, 0);
-      if (avance)
-        vitesse = versOu.mult(rapidite);
-      if (recule)
-        vitesse = versOu.add(versOu.mult(-rapidite));
-      if (gauche)
-        vitesse = new Vecteur(sin(-angleY), 0, cos(-angleY)).mult(rapidite);
-      if (droite)
-        vitesse = new Vecteur(-sin(-angleY), 0, -cos(-angleY)).mult(rapidite);
-      equation = new EquationDouble(zoneMarche.equation, new EquationLineaire(vitesse.x, vitesse.y, vitesse.z, position.x, position.y, position.z, temps, avance));
-      this.equationToSend = true;
-    }
-
-
-    /* Execution des attaques*/
-    if (E)
-    {
-      chargerBouclier(temps);
-    } else if (lastE)
-      attaqueBouclier(temps);
-
-    if (R)
-    {
-      if (chargerCompetence(temps)) //changer Comp return true si l'animation n'est pas changée
-      {
-        if (avance || recule)
-          changeAnimation(byte(1), temps);
-        else
-          changeAnimation(byte(0), temps);
-      }
-    } else if (lastR)
-      attaqueCompetence(temps);
-    else if (A)
-    {
-      chargerAttaqueDeBase(temps);
-      changeAnimation(byte(2), temps);
-    } else if (lastA)
-      attaqueAttaqueDeBase(temps);
-    else if (avance || recule)
-      changeAnimation(byte(1), temps);
-    else
-      changeAnimation(byte(0), temps);
-
-    if (bouclier)
-      rechargeBouclier = temps;
-
-    lastA = A;
-    lastR = R;
-    lastE = E;
   }
 
   public void ejecter(float Vx, float Vy, float Vz, int temps, Personnage m_tueur, float m_scoreFrappe)
@@ -181,17 +117,4 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
     renduInterne(temps - tempsDebutAnim);
     popMatrix();
   }
-
-  /*Competences*/
-  protected int rechargeBouclier = -1;
-  abstract public void chargerBouclier(int temps);
-  abstract public void attaqueBouclier(int temps);
-
-  protected int rechargeAttaqueDeBase = -1;
-  abstract public void chargerAttaqueDeBase(int temps);
-  abstract public void attaqueAttaqueDeBase(int temps);
-
-  protected int rechargeCompetence = -1;
-  abstract public boolean chargerCompetence(int temps);
-  abstract public void attaqueCompetence(int temps);
 }

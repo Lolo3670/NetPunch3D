@@ -7,7 +7,7 @@ class Cubeman extends Personnage
     AABB_negatif = new Vecteur(-0.75, -1.25, -0.75);
     AABB_positif = new Vecteur(0.75, 1.25, 0.75);
 
-    masse = 20;
+    masse = 2;
     rapidite = 7f;
     hauteurSaut = 2;
   }
@@ -292,10 +292,10 @@ class Cubeman extends Personnage
       box(pieds);
       popMatrix();
 
-      pushMatrix();
-      translate(0, 1+0.1*cos(PI+temps/50.0f), 0);
-      box(tete);
-      popMatrix();
+      /*pushMatrix();
+       translate(0, 1+0.1*cos(PI+temps/50.0f), 0);
+       box(tete);
+       popMatrix();*/
       break;
 
 
@@ -400,25 +400,22 @@ class Cubeman extends Personnage
   {
     if ((rechargeAttaqueDeBase == -1) || ((temps - rechargeAttaqueDeBase) > 250)) //Tous les quarts de secondes un projectile est envoyé dans la direction de visée
     {
-      influents.add(new ProjectileCubeman(new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) *  sin(angleY)).mult(8), equation.calculPosition(temps), this, temps));
-
-      synchronized (sockets)
+      for (int i = 0; i < personnages.size(); i++)
       {
-        for (int j = 0; j < outs.size(); j++) // On prévient les autres
+        Personnage perso = personnages.get(i);
+        if (perso != this)
         {
-          try
+          Vecteur vecteur = perso.equation.calculPosition(temps).add(equation.calculPosition(temps).mult(-1));
+          if (vecteur.norme() < 3)
           {
-            /* Envoie du projectile test */
-            outs.get(j).writeByte(8);
-            outs.get(j).writeInt(200);
-            outs.get(j).writeInt(0);
-          }
-          catch (Exception e)
-          {
-            println(e);
+            Vecteur visee = new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) * sin(angleY));
+            float cosAngle = vecteur.scalaire(visee) / (vecteur.norme() * visee.norme());
+            if (cosAngle > 0.8f)
+              perso.ejecter(vecteur.x, vecteur.y + 5, vecteur.z, temps, this, 0.5);
           }
         }
       }
+
       rechargeAttaqueDeBase = temps;
     }
   }
@@ -441,7 +438,9 @@ class Cubeman extends Personnage
       changeAnimation(byte(3), temps);
       if ((temps - timerAttaqueSpeciale) > 1000) //Toutes les secondes durant, on balance un missile
       {
-        influents.add(new ProjectileCompCubeman(new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) *  sin(angleY)).mult(8), equation.calculPosition(temps), this, temps));
+        Vecteur visee = new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) *  sin(angleY)).mult(8);
+        Vecteur position = equation.calculPosition(temps);
+        influents.add(new ProjectileCompCubeman(visee, position, this, temps));
 
         synchronized (sockets)
         {
@@ -451,8 +450,14 @@ class Cubeman extends Personnage
             {
               /* Envoie du projectile test */
               outs.get(j).writeByte(8);
-              outs.get(j).writeInt(200);
-              outs.get(j).writeInt(0);
+              outs.get(j).writeInt(201);
+              outs.get(j).writeFloat(visee.x);
+              outs.get(j).writeFloat(visee.y);
+              outs.get(j).writeFloat(visee.z);
+              outs.get(j).writeFloat(position.x);
+              outs.get(j).writeFloat(position.y);
+              outs.get(j).writeFloat(position.z);
+              outs.get(j).writeInt(temps);
             }
             catch (Exception e)
             {
@@ -472,50 +477,6 @@ class Cubeman extends Personnage
 }
 
 
-class ProjectileCubeman extends Projectile
-{ 
-  Cubeman cubeman;
-
-  ProjectileCubeman(Vecteur direction, Vecteur position, Cubeman perso, int temps) //temps relatif au début de la partie
-  {
-    super(new EquationLineaire(direction.x, direction.y, direction.z, position.x, position.y, position.z, temps));
-    cubeman = perso;
-  }
-
-  protected void renduInterne(int temps) //que sur le serveur, debug
-  {
-    fill(255, 255, 255);
-    box(0.3, 0.1, 0.1);
-  }
-
-  protected void effetSurPersonnage(Personnage perso, int temps)
-  {
-    Vecteur vitesse = equation.calculVitesse(temps).normaliser();
-    perso.ejecter(vitesse.x * 5, 5f, vitesse.y * 5, temps, cubeman, 1);
-  }
-
-  @Override
-    public int collisionAvecPersonnage(Personnage perso, int tempsDebut, int tempsFin)
-  {
-    if ((tempsFin - equation.m_tempsDebut) > 500)
-    {
-      this.toRemove = true;
-      return -1;
-    }
-    if (perso == cubeman)
-    {
-      return -1;
-    }
-    if (!toRemove)
-    {
-      int result = perso.equation.collision(perso.getAABB_negatif(), perso.getAABB_positif(), new Vecteur(0, 0, 0), new Vecteur(0, 0, 0), equation, tempsDebut, tempsFin, false);
-      return result;
-    }
-    return -1;
-  }
-}
-
-
 class ProjectileCompCubeman extends Projectile
 { 
   Cubeman cubeman;
@@ -526,10 +487,16 @@ class ProjectileCompCubeman extends Projectile
     cubeman = perso;
   }
 
+  ProjectileCompCubeman(Vecteur direction, Vecteur position, int temps) //temps relatif au début de la partie
+  {
+    super(new EquationLineaire(direction.x, direction.y, direction.z, position.x, position.y, position.z, temps));
+    cubeman = null;
+  }
+
   protected void renduInterne(int temps)
   {
-    fill(255, 255, 255);
-    box(2, 2, 2);
+    fill(0.5);
+    box(0.5);
   }
 
   protected void effetSurPersonnage(Personnage perso, int temps) //ejecte tous les persos de la zone, comme la compétence de globulix

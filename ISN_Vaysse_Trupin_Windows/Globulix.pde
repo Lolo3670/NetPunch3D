@@ -13,7 +13,7 @@ class Globulix extends Personnage
   }
 
   protected void renduInterne(int temps)
-  {
+  {  
     scale(0.5, 0.5, 0.5); 
     rotateY(PI);
     rotateX(PI);
@@ -487,105 +487,5 @@ class Globulix extends Personnage
       }
       break;
     }
-  }
-
-  public void chargerBouclier(int temps) //même fonctionnement que cubeman
-  {
-    if ((rechargeBouclier == -1) || (temps - rechargeBouclier > 20000))
-    {
-      bouclier = true;
-    }
-  }
-
-  public void chargerAttaqueDeBase(int temps) //pareile que chez cubeman
-  {
-    if ((rechargeAttaqueDeBase == -1) || ((temps - rechargeAttaqueDeBase) > 250))
-    {
-      influents.add(new ProjectileGlobulix(new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) *  sin(angleY)).mult(8), equation.calculPosition(temps), this, temps));
-
-      rechargeAttaqueDeBase = temps;
-    }
-  }
-
-  public void attaqueBouclier(int temps) {
-  }
-
-  public void attaqueAttaqueDeBase(int temps) {
-  }
-
-  private int timerAttaqueSpeciale = 0;
-  public boolean chargerCompetence(int temps) { //Recharge pareil que chez cubeman, mais éjecte tout autour de lui
-    if ((rechargeCompetence == -1) || ((temps - rechargeCompetence) > 10000))
-    {
-      rechargeCompetence = temps;
-    }
-    if ((temps - rechargeCompetence) < 4000)
-    {
-      changeAnimation(byte(3), temps);
-      if ((temps - timerAttaqueSpeciale) > 250)
-      {
-        for (int i = 0; i < personnages.size(); i++)
-        {
-          Personnage perso = personnages.get(i);
-          if (perso != this)
-          {
-            Vecteur vecteur = perso.equation.calculPosition(temps).add(equation.calculPosition(temps).mult(-1));
-            if (vecteur.norme() < 3)
-            {
-              vecteur = vecteur.normaliser().mult(4);
-              perso.ejecter(vecteur.x, vecteur.y + 5, vecteur.z, temps, this, 0.5);
-            }
-          }
-        }
-        timerAttaqueSpeciale = temps;
-      }
-    } else
-      return true;
-    return false;
-  }
-  public void attaqueCompetence(int temps) {
-  }
-}
-
-class ProjectileGlobulix extends Projectile
-{ 
-  Personnage globulix;
-
-  ProjectileGlobulix(Vecteur direction, Vecteur position, Personnage perso, int temps) //temps relatif au début de la partie
-  {
-    super(new EquationLineaire(direction.x, direction.y, direction.z, position.x, position.y, position.z, temps));
-    globulix = perso;
-  }
-
-  protected void renduInterne(int temps)
-  {
-    fill(255, 255, 255);
-    box(0.3, 0.1, 0.1);
-  }
-
-  protected void effetSurPersonnage(Personnage perso, int temps)
-  {
-    Vecteur vitesse = equation.calculVitesse(temps).normaliser();
-    perso.ejecter(vitesse.x * 5, 5f, vitesse.y * 5, temps, globulix, 0.50);
-  }
-
-  @Override
-    public int collisionAvecPersonnage(Personnage perso, int tempsDebut, int tempsFin)
-  {
-    if ((tempsFin - equation.m_tempsDebut) > 250)
-    {
-      this.toRemove = true;
-      return -1;
-    }
-    if (perso == globulix)
-    {
-      return -1;
-    }
-    if (!toRemove)
-    {
-      int result = perso.equation.collision(perso.getAABB_negatif(), perso.getAABB_positif(), new Vecteur(0, 0, 0), new Vecteur(0, 0, 0), equation, tempsDebut, tempsFin, false);
-      return result;
-    }
-    return -1;
   }
 }

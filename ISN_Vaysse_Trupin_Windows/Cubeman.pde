@@ -256,11 +256,11 @@ class Cubeman extends Personnage
           box(bras);
           popMatrix();
         }
-        pushMatrix();
+        /*pushMatrix();
         fill(0.50);
         translate(2*sin(PI+temps/80.0f)+1.5, 0, 0);
         box(tete);
-        popMatrix();
+        popMatrix();*/
       }
       break;
 
@@ -370,99 +370,8 @@ class Cubeman extends Personnage
       break;
     }
   }
-
-  public void chargerBouclier(int temps)
-  {
-    if ((rechargeBouclier == -1) || (temps - rechargeBouclier > 20000)) //si le bouclier na jamais été lancé lancé ou si cela fait plus de 20 secondes
-    {
-      bouclier = true;
-    }
-  }
-
-  public void chargerAttaqueDeBase(int temps)
-  {
-    if ((rechargeAttaqueDeBase == -1) || ((temps - rechargeAttaqueDeBase) > 250)) //Tous les quarts de secondes un projectile est envoyé dans la direction de visée
-    {
-      influents.add(new ProjectileCubeman(new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) *  sin(angleY)).mult(8), equation.calculPosition(temps), this, temps));
-
-      rechargeAttaqueDeBase = temps;
-    }
-  }
-
-  public void attaqueBouclier(int temps) {
-  }
-
-  public void attaqueAttaqueDeBase(int temps) {
-  }
-
-  private int timerAttaqueSpeciale = 0;
-  public boolean chargerCompetence(int temps) {
-    if ((rechargeCompetence == -1) || ((temps - rechargeCompetence) > 10000)) //temps de rehcarge 10 sec
-    {
-      rechargeCompetence = temps;
-    }
-
-    if ((temps - rechargeCompetence) < 4000) //L'attaque dure 4 sec
-    {
-      changeAnimation(byte(3), temps);
-      if ((temps - timerAttaqueSpeciale) > 1000) //Toutes les secondes durant, on balance un missile
-      {
-        influents.add(new ProjectileCompCubeman(new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) *  sin(angleY)).mult(8), equation.calculPosition(temps), this, temps));
-
-        timerAttaqueSpeciale = temps;
-      }
-    } else
-      return true;
-
-    return false;
-  }
-  public void attaqueCompetence(int temps) {
-  }
 }
 
-
-class ProjectileCubeman extends Projectile
-{ 
-  Cubeman cubeman;
-
-  ProjectileCubeman(Vecteur direction, Vecteur position, Cubeman perso, int temps) //temps relatif au début de la partie
-  {
-    super(new EquationLineaire(direction.x, direction.y, direction.z, position.x, position.y, position.z, temps));
-    cubeman = perso;
-  }
-
-  protected void renduInterne(int temps) //que sur le serveur, debug
-  {
-    fill(255, 255, 255);
-    box(0.3, 0.1, 0.1);
-  }
-
-  protected void effetSurPersonnage(Personnage perso, int temps)
-  {
-    Vecteur vitesse = equation.calculVitesse(temps).normaliser();
-    perso.ejecter(vitesse.x * 5, 5f, vitesse.y * 5, temps, cubeman, 1);
-  }
-
-  @Override
-    public int collisionAvecPersonnage(Personnage perso, int tempsDebut, int tempsFin)
-  {
-    if ((tempsFin - equation.m_tempsDebut) > 500)
-    {
-      this.toRemove = true;
-      return -1;
-    }
-    if (perso == cubeman)
-    {
-      return -1;
-    }
-    if (!toRemove)
-    {
-      int result = perso.equation.collision(perso.getAABB_negatif(), perso.getAABB_positif(), new Vecteur(0, 0, 0), new Vecteur(0, 0, 0), equation, tempsDebut, tempsFin, false);
-      return result;
-    }
-    return -1;
-  }
-}
 
 
 class ProjectileCompCubeman extends Projectile
@@ -474,11 +383,17 @@ class ProjectileCompCubeman extends Projectile
     super(new EquationLineaire(direction.x, direction.y, direction.z, position.x, position.y, position.z, temps));
     cubeman = perso;
   }
+  
+  ProjectileCompCubeman(Vecteur direction, Vecteur position, int temps) //temps relatif au début de la partie
+  {
+    super(new EquationLineaire(direction.x, direction.y, direction.z, position.x, position.y, position.z, temps));
+    cubeman = null;
+  }
 
   protected void renduInterne(int temps)
   {
-    fill(255, 255, 255);
-    box(2, 2, 2);
+    fill(0.5);
+    box(0.5);
   }
 
   protected void effetSurPersonnage(Personnage perso, int temps) //ejecte tous les persos de la zone, comme la compétence de globulix

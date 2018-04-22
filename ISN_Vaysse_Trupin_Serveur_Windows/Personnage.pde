@@ -76,7 +76,7 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
         tueur.score++;
       score--;
 
-      scoreFrappe = 1;
+      scoreFrappe = 1.0f;
       bouclier = false;
 
       synchronized (sockets) //notification des chgts
@@ -98,7 +98,7 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
 
             outs.get(j).writeByte(15);
             outs.get(j).writeInt(personnages.indexOf(this));
-            outs.get(j).writeInt(1);
+            outs.get(j).writeFloat(1);
 
             outs.get(j).writeByte(13);
             outs.get(j).writeInt(personnages.indexOf(this));
@@ -207,8 +207,9 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
     } else  //sinon changellent de l'équation => Equation gravité
     {
       Vecteur newPosition = equation.calculPosition(temps); 
-      Vecteur vitesseInitiale = equation.calculVitesse(temps).mult(scoreFrappe);
-      this.equation = new EquationGravite(vitesseInitiale.x + Vx, vitesseInitiale.y + Vy, vitesseInitiale.z + Vz, newPosition.x, newPosition.y, newPosition.z, temps);
+      Vecteur vitesseInitiale = equation.calculVitesse(temps);
+      float coef = scoreFrappe / masse;
+      this.equation = new EquationGravite(vitesseInitiale.x + (Vx * coef), vitesseInitiale.y + (Vy * coef), vitesseInitiale.z + (Vz * coef), newPosition.x, newPosition.y, newPosition.z, temps);
       this.equationToSend = true;
       zoneMarche = null;
 

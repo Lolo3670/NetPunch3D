@@ -46,7 +46,7 @@ void draw()
     background(0);
 
     textSize(12);
-        textSize(12);
+    textSize(12);
     text("     Serveur", width/2, height/2); 
     text("Appuyez sur entrée pour lancer la partie !", 900, 525);
 
@@ -121,7 +121,7 @@ void gameLogic()
   while (etape == PARTIE)
   {
     tempsLogic = millis() - tempsDebutPartie;
-    if (tempsLogic > 30000) //Plus de 3 minutes de partie
+    if (tempsLogic > 180000) //Plus de 3 minutes de partie
       etape = STATISTIQUES;
 
     for (int i = 0; i < personnages.size(); i++) //Fait effectuer les action selon les touches appuyées aux personnages
@@ -280,11 +280,15 @@ void keyPressed()
 
             outs.get(j).writeByte(12); //Assigne un perso au client
             outs.get(j).writeInt(j);
-            
+
             switch (infos.get(j).type) //crée le perso pour le serveur
             {
             case 0:
               personnages.add(new Globulix(j, 7, 0, 0, 0, 0, temps));
+              break;
+
+            case 2:              
+              personnages.add(new Plasmax(j, 7, 0, 0, 0, 0, temps));
               break;
 
             default:
@@ -581,14 +585,16 @@ class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part 
   }
 }
 
-String nomPerso(int nb)
+String nomPerso(int nb) //Renvoie un string dépendant du type de perso donnée en argument
 {
   switch( nb)
   {
-  case 0: 
-    return "Globulix";
-  case 1: 
-    return "Cubeman";
+  case 0 : 
+    return "Globulix"; 
+  case 1 : 
+    return "Cubeman"; 
+  case 2:
+    return "Plasmax";
   default : 
     return "Error";
   }

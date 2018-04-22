@@ -323,12 +323,24 @@ void reception() //Le thread du reseau
             personnages.add(new Cubeman(in.readFloat(), in.readFloat(), in.readFloat(), in.readFloat(), in.readFloat(), in.readFloat(), in.readInt())); 
             break; 
 
+          case 2:
+            personnages.add(new Plasmax(in.readFloat(), in.readFloat(), in.readFloat(), in.readFloat(), in.readFloat(), in.readFloat(), in.readInt()));
+            break;
+
           case 100 : 
             influents.add(new Terrain(in.readFloat(), in.readFloat(), in.readFloat())); 
             break; 
 
           case 200 : 
             influents.add(new ProjectileTest(in.readInt())); //ProjectileTest = un projectile invsibles
+            break;
+
+          case 201:
+            influents.add(new ProjectileCompCubeman(new Vecteur(in.readFloat(), in.readFloat(), in.readFloat()), new Vecteur(in.readFloat(), in.readFloat(), in.readFloat()), in.readInt()));
+            break;
+
+          case 202:
+            influents.add(new ProjectileCompPlasmax(new Vecteur(in.readFloat(), in.readFloat(), in.readFloat()), new Vecteur(in.readFloat(), in.readFloat(), in.readFloat()), in.readInt()));
             break;
           }
         }
@@ -459,7 +471,7 @@ void mouseWheel(MouseEvent event) //si la molette bouge
         out.writeInt(info.type); //On prévient le serveur
       } else if (event.getAmount() < 0)
       {
-        if (info.type < 1) //limite
+        if (info.type < 2) //limite
           info.type++; 
 
         out.writeByte(101); 
@@ -696,6 +708,8 @@ String nomPerso(int nb) //Renvoie un string dépendant du type de perso donnée 
     return "Globulix"; 
   case 1 : 
     return "Cubeman"; 
+  case 2:
+    return "Plasmax";
   default : 
     return "Error";
   }

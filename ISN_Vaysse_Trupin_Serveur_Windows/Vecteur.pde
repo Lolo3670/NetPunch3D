@@ -60,6 +60,11 @@ class Vecteur
     return sqrt(x * x + y*y + z*z);
   }
   
+  float scalaire(Vecteur vecteur)
+  {
+    return vecteur.x * x + vecteur.y * y + vecteur.z * z;
+  }
+  
   @Override
     String toString()
   {

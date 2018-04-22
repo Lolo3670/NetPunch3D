@@ -7,7 +7,7 @@ class Globulix extends Personnage
     AABB_negatif = new Vecteur(-0.25, -0.75, -0.25);
     AABB_positif = new Vecteur(0.25, 0.5, 0.25);
 
-    masse = 10;
+    masse = 1;
     rapidite = 10f;
     hauteurSaut = 2;
   }
@@ -517,25 +517,22 @@ class Globulix extends Personnage
   {
     if ((rechargeAttaqueDeBase == -1) || ((temps - rechargeAttaqueDeBase) > 250))
     {
-      influents.add(new ProjectileGlobulix(new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) *  sin(angleY)).mult(8), equation.calculPosition(temps), this, temps));
-
-      synchronized (sockets)
+      for (int i = 0; i < personnages.size(); i++)
       {
-        for (int j = 0; j < outs.size(); j++) // On prévient les autres
+        Personnage perso = personnages.get(i);
+        if (perso != this)
         {
-          try
+          Vecteur vecteur = perso.equation.calculPosition(temps).add(equation.calculPosition(temps).mult(-1));
+          if (vecteur.norme() < 3)
           {
-            /* Envoie du projectile test */
-            outs.get(j).writeByte(8);
-            outs.get(j).writeInt(200);
-            outs.get(j).writeInt(0);
-          }
-          catch (Exception e)
-          {
-            println(e);
+            Vecteur visee = new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) * sin(angleY));
+            float cosAngle = vecteur.scalaire(visee) / (vecteur.norme() * visee.norme());
+            if (cosAngle > 0.8f)
+              perso.ejecter(vecteur.x, vecteur.y + 5, vecteur.z, temps, this, 0.5);
           }
         }
       }
+
       rechargeAttaqueDeBase = temps;
     }
   }

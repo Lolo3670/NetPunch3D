@@ -273,12 +273,12 @@ class Plasmax extends Personnage
 
   public void chargerBouclier(int temps)
   {
-    if ((rechargeBouclier == -1) || (temps - rechargeBouclier > 20000)) //si le bouclier na jamais été lancé lancé ou si cela fait plus de 20 secondes
+    if ((rechargeBouclier == -1) || (temps - rechargeBouclier > 20000))
     {
       bouclier = true;
       synchronized (sockets)
       {
-        for (int j = 0; j < outs.size(); j++) // On prévient les autres
+        for (int j = 0; j < outs.size(); j++)
         {
           try
           {
@@ -298,7 +298,7 @@ class Plasmax extends Personnage
 
   public void chargerAttaqueDeBase(int temps)
   {
-    if ((rechargeAttaqueDeBase == -1) || ((temps - rechargeAttaqueDeBase) > 250)) //Tous les quarts de secondes un projectile est envoyé dans la direction de visée
+    if ((rechargeAttaqueDeBase == -1) || ((temps - rechargeAttaqueDeBase) > 250))
     {
       for (int i = 0; i < personnages.size(); i++)
       {
@@ -330,7 +330,7 @@ class Plasmax extends Personnage
     return true;
   }
   public void attaqueCompetence(int temps) {
-    if ((rechargeCompetence == -1) || ((temps - rechargeCompetence) > 2000)) //temps de rehcarge 2 sec
+    if ((rechargeCompetence == -1) || ((temps - rechargeCompetence) > 2000))
     {
       Vecteur visee = new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) *  sin(angleY)).mult(8);
       Vecteur position = equation.calculPosition(temps);
@@ -338,7 +338,7 @@ class Plasmax extends Personnage
 
       synchronized (sockets)
       {
-        for (int j = 0; j < outs.size(); j++) // On prévient les autres
+        for (int j = 0; j < outs.size(); j++)
         {
           try
           {
@@ -370,13 +370,13 @@ class ProjectileCompPlasmax extends Projectile
 { 
   Plasmax plasmax;
 
-  ProjectileCompPlasmax(Vecteur direction, Vecteur position, Plasmax perso, int temps) //temps relatif au début de la partie
+  ProjectileCompPlasmax(Vecteur direction, Vecteur position, Plasmax perso, int temps)
   {
     super(new EquationLineaire(direction.x, direction.y, direction.z, position.x, position.y, position.z, temps));
     plasmax = perso;
   }
 
-  ProjectileCompPlasmax(Vecteur direction, Vecteur position, int temps) //temps relatif au début de la partie
+  ProjectileCompPlasmax(Vecteur direction, Vecteur position, int temps)
   {
     super(new EquationLineaire(direction.x, direction.y, direction.z, position.x, position.y, position.z, temps));
     plasmax = null;
@@ -389,7 +389,7 @@ class ProjectileCompPlasmax extends Projectile
     shape(shape);
   }
 
-  protected void effetSurPersonnage(Personnage perso, int temps) //ejecte tous les persos de la zone, comme la compétence de globulix
+  protected void effetSurPersonnage(Personnage perso, int temps)
   {
     Vecteur vecteur = equation.calculVitesse(temps);
     perso.ejecter(vecteur.x, vecteur.y + 5, vecteur.z, temps, plasmax, 0.5);
@@ -398,18 +398,13 @@ class ProjectileCompPlasmax extends Projectile
   @Override
     public int collisionAvecPersonnage(Personnage perso, int tempsDebut, int tempsFin)
   {
-    if ((equation.calculPosition(tempsDebut).y < -10) || (equation.calculPosition(tempsDebut).y > 10))
+        if ((tempsFin - equation.m_tempsDebut) > 2000)
     {
       this.toRemove = true;
       return -1;
     }
     if (perso == plasmax)
     {
-      return -1;
-    }
-    if ((tempsFin - equation.m_tempsDebut) > 2000)
-    {
-      this.toRemove = true;
       return -1;
     }
     if (!toRemove)

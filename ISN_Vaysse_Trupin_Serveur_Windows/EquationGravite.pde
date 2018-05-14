@@ -10,7 +10,7 @@ class EquationGravite extends Equation
 
   protected Vecteur calculInterne(float temps)
   {
-    return new Vecteur(0, DEMIG*temps*temps, 0).add(vitesse.mult(temps)); //-0.5gt^2 + v*t
+    return new Vecteur(0, DEMIG*temps*temps, 0).add(vitesse.mult(temps));
   }
 
   protected Vecteur calculInterneOrientation(float temps)

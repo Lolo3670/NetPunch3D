@@ -1,6 +1,6 @@
-class ProjectileTest extends Projectile //garder comme projectile invisble
+class ProjectileTest extends Projectile
 {
-  ProjectileTest(int tempsDebut) //temps relatif au début de la partie
+  ProjectileTest(int tempsDebut)
   {
     super(new EquationGravite(0, 7, 10, 0, 0, 0, tempsDebut));
   }

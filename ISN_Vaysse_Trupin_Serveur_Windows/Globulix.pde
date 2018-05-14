@@ -489,14 +489,14 @@ class Globulix extends Personnage
     }
   }
 
-  public void chargerBouclier(int temps) //même fonctionnement que cubeman
+  public void chargerBouclier(int temps)
   {
     if ((rechargeBouclier == -1) || (temps - rechargeBouclier > 20000))
     {
       bouclier = true;
       synchronized (sockets)
       {
-        for (int j = 0; j < outs.size(); j++) // On prévient les autres
+        for (int j = 0; j < outs.size(); j++)
         {
           try
           {
@@ -513,7 +513,7 @@ class Globulix extends Personnage
     }
   }
 
-  public void chargerAttaqueDeBase(int temps) //pareile que chez cubeman
+  public void chargerAttaqueDeBase(int temps)
   {
     if ((rechargeAttaqueDeBase == -1) || ((temps - rechargeAttaqueDeBase) > 250))
     {
@@ -544,7 +544,7 @@ class Globulix extends Personnage
   }
 
   private int timerAttaqueSpeciale = 0;
-  public boolean chargerCompetence(int temps) { //Recharge pareil que chez cubeman, mais éjecte tout autour de lui
+  public boolean chargerCompetence(int temps) { 
     if ((rechargeCompetence == -1) || ((temps - rechargeCompetence) > 10000))
     {
       rechargeCompetence = temps;

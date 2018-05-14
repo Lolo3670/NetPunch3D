@@ -1,4 +1,4 @@
-import java.net.*; //<>// //<>//
+import java.net.*;
 import java.io.*;
 
 final int CONNEXION = 1;
@@ -25,7 +25,7 @@ void setup()
 {
   etape = CONNEXION;
 
-  size(1280, 752, P3D); //Créer un serveur
+  size(1280, 752, P3D);
   ServeurThread serveurThread = new ServeurThread();
   serveurThread.start();
   threads.add(serveurThread);
@@ -121,23 +121,23 @@ void gameLogic()
   while (etape == PARTIE)
   {
     tempsLogic = millis() - tempsDebutPartie;
-    if (tempsLogic > 180000) //Plus de 3 minutes de partie
+    if (tempsLogic > 180000)
       etape = STATISTIQUES;
 
-    for (int i = 0; i < personnages.size(); i++) //Fait effectuer les action selon les touches appuyées aux personnages
+    for (int i = 0; i < personnages.size(); i++)
     {
       Controle controle = controles.get(i);
       personnages.get(i).action(controle.up, controle.down, controle.left, controle.right, controle.A, controle.E, controle.R, tempsLogicLast);
     }
-    for (int i = 0; i < personnages.size(); i++) //on calcule les collisions pour avoir la position des persos
+    for (int i = 0; i < personnages.size(); i++)
     {
       perso = personnages.get(i);
       perso.actualiserPosition(influents, personnages, tempsLogicLast, tempsLogic);
-      if (perso.equationToSend) //Si l'équation a changé, on prévient
+      if (perso.equationToSend)
       {
         synchronized(sockets)
         {
-          for (int j = 0; j < outs.size(); j++) // On prévient les autres
+          for (int j = 0; j < outs.size(); j++)
           {
             try
             {
@@ -145,7 +145,7 @@ void gameLogic()
               outs.get(j).writeInt(i);
               perso.equation.toNet(outs.get(j));
             }
-            catch (Exception e2) //Erreur pas trop grave : le client s'est déco (géré par le receptionThread)
+            catch (Exception e2)
             {
               println("Erreur pour l'nevoie des équations : " + e2.toString());
             }
@@ -154,11 +154,11 @@ void gameLogic()
         perso.equationToSend = false;
       }
 
-      if (perso.animationChanged) //on notifie si l'animation a changé
+      if (perso.animationChanged)
       {
         synchronized(sockets)
         {
-          for (int j = 0; j < outs.size(); j++) // On prévient les autres
+          for (int j = 0; j < outs.size(); j++)
           {
             try
             {
@@ -167,7 +167,7 @@ void gameLogic()
               outs.get(j).writeByte(perso.nbAnimation);
               outs.get(j).writeInt(perso.tempsDebutAnim);
             }
-            catch (Exception e2) //Erreur pas trop grave : le client s'est déco (géré par le receptionThread)
+            catch (Exception e2)
             {
               println("Erreur pour l'nevoie des animations : " + e2.toString());
             }
@@ -178,20 +178,20 @@ void gameLogic()
     }
 
     int i = 0;
-    while (i < influents.size ()) //supprime les influents marqués comme devant l'etre
+    while (i < influents.size())
     {
       if (influents.get(i).toRemove)
       {
         synchronized(sockets)
         {
-          for (int j = 0; j < outs.size(); j++) // On prévient les autres
+          for (int j = 0; j < outs.size(); j++)
           {
             try
             {
               outs.get(j).writeByte(10);
               outs.get(j).writeInt(i);
             }
-            catch (Exception e2) //Erreur pas trop grave : le client s'est déco (géré par le receptionThread)
+            catch (Exception e2)
             {
               println("Erreur pour la suppression d'influent : " + e2.toString());
             }
@@ -208,13 +208,13 @@ void gameLogic()
 
   synchronized(sockets)
   {
-    for (int i = 0; i < outs.size(); i++) // On prévient les autres de la fin de la partie
+    for (int i = 0; i < outs.size(); i++)
     {
       try
       {
         outs.get(i).writeByte(7);
       }
-      catch (Exception e2) //Erreur pas trop grave : le client s'est déco (géré par le receptionThread)
+      catch (Exception e2)
       {
         println("Erreur pour le passage à la partie : " + e2.toString());
       }
@@ -227,19 +227,19 @@ void keyPressed()
   switch (etape)
   {
   case CONNEXION:
-    if (key == ENTER) //Le serveur valide
+    if (key == ENTER)
     {
       etape = PARTIE;
       synchronized(sockets)
       {
         tempsDebutPartie = millis() + 1000;
-        for (int i = 0; i < outs.size(); i++) // On prévient les autres
+        for (int i = 0; i < outs.size(); i++)
         {
           try
           {
             outs.get(i).writeByte(6);
           }
-          catch (Exception e2) //Erreur pas trop grave : le client s'est déco (géré par le receptionThread)
+          catch (Exception e2)
           {
             println("Erreur pour le passage à la partie : " + e2.toString());
           }
@@ -247,15 +247,13 @@ void keyPressed()
         thread("gameLogic");
       }
 
-      //Tcréer les personnages, les Terrains
       synchronized(sockets)
       {
         int temps = millis() - tempsDebutPartie;
-        for (int j = 0; j < outs.size(); j++) // On prévient les autres
+        for (int j = 0; j < outs.size(); j++)
         {
           try
           {
-            /*Envoie du terrain*/
             outs.get(j).writeByte(8);
             outs.get(j).writeInt(100);
             outs.get(j).writeFloat(0);
@@ -264,7 +262,7 @@ void keyPressed()
 
             synchronized (infos)
             {
-              for (int i = 0; i < infos.size(); i++) //renseigne de la liste de tous les persos
+              for (int i = 0; i < infos.size(); i++)
               {
                 outs.get(j).writeByte(8);
                 outs.get(j).writeInt(infos.get(i).type);
@@ -278,10 +276,10 @@ void keyPressed()
               }
             }
 
-            outs.get(j).writeByte(12); //Assigne un perso au client
+            outs.get(j).writeByte(12);
             outs.get(j).writeInt(j);
 
-            switch (infos.get(j).type) //crée le perso pour le serveur
+            switch (infos.get(j).type)
             {
             case 0:
               personnages.add(new Globulix(j, 7, 0, 0, 0, 0, temps));
@@ -296,7 +294,7 @@ void keyPressed()
               break;
             }
           }
-          catch (Exception e2) //Erreur pas trop grave : le client s'est déco (géré par le receptionThread)
+          catch (Exception e2)
           {
             println(e2.toString());
           }
@@ -329,7 +327,7 @@ class Info
   }
 }
 
-class Controle //retient les touches appuyées par un perso
+class Controle
 {
   boolean up = false, down = false, left = false, right = false;
   boolean A = false, E = false, R = false;
@@ -347,18 +345,18 @@ class ServeurThread extends Thread
     try
     {
       ServerSocket server = new ServerSocket(8000);
-      while (etape == CONNEXION) //Après on accepte plus les connexions...
+      while (etape == CONNEXION)
       {
-        Socket socket = server.accept(); //chaque fois qu'un client se co
+        Socket socket = server.accept();
         if (socket != null)
         {
           DataOutputStream out = new DataOutputStream(socket.getOutputStream());
           DataInputStream in = new DataInputStream(socket.getInputStream());
 
-          Info info = new Info(in.readUTF(), in.readInt(), false); // Reception des infos
+          Info info = new Info(in.readUTF(), in.readInt(), false);
           synchronized (infos)
           {
-            out.writeInt(infos.size()); // Envoi du nombre de joueurs deja co + leurs infos
+            out.writeInt(infos.size());
             for (int i = 0; i < infos.size(); i++)
             {
               out.writeUTF(infos.get(i).pseudo);
@@ -372,7 +370,7 @@ class ServeurThread extends Thread
               outs.add(out);
               ins.add(in);
 
-              for (int i = 0; i < outs.size(); i++) // Envoie des infos DU joueur a tout le monde y compris a lui
+              for (int i = 0; i < outs.size(); i++)
               {
                 try
                 {
@@ -380,7 +378,7 @@ class ServeurThread extends Thread
                   outs.get(i).writeUTF(info.pseudo);
                   outs.get(i).writeInt(info.type);
                 }
-                catch (Exception e) //Erreur pas trop grave : le client s'est déco (géré par le receptionThread)
+                catch (Exception e)
                 {
                   println("Erreur serveur pour le code 4 : " + e.toString());
                 }
@@ -406,7 +404,7 @@ class ServeurThread extends Thread
 }
 
 
-class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part d'UN client (un recpeitonThread par client)
+class ReceptionThread extends Thread
 {
   public DataInputStream in;
 
@@ -418,7 +416,7 @@ class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part 
   void run()
   {
     int code;
-    while (etape != STATISTIQUES) //sinon on arrete le client
+    while (etape != STATISTIQUES)
     {
       try
       {
@@ -429,14 +427,14 @@ class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part 
         case CONNEXION:
           switch(code)
           {
-          case 101: //Changement de type
+          case 101:
             synchronized (sockets)
             {
-              int index = ins.indexOf(in); //on récupère son indice
+              int index = ins.indexOf(in);
               synchronized(infos)
               {
                 infos.get(index).type = in.readInt();
-                for (int i = 0; i < outs.size(); i++) // On prévient les autres
+                for (int i = 0; i < outs.size(); i++)
                 {
                   try
                   {
@@ -444,7 +442,7 @@ class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part 
                     outs.get(i).writeInt(index);
                     outs.get(i).writeInt(infos.get(index).type);
                   }
-                  catch (Exception e2) //Erreur pas trop grave : le client s'est déco (géré par le receptionThread)
+                  catch (Exception e2)
                   {
                     println("Erreur pour le code 101 : " + e2.toString());
                   }
@@ -453,20 +451,20 @@ class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part 
             }
             break;
 
-          case 102: //Je valide
+          case 102:
             synchronized (sockets)
             {
               int index = ins.indexOf(in);
               synchronized(infos)
               {
-                for (int i = 0; i < outs.size(); i++) // On prévient les autres
+                for (int i = 0; i < outs.size(); i++)
                 {
                   try
                   {
                     outs.get(i).writeByte(5);
                     outs.get(i).writeInt(index);
                   }
-                  catch (Exception e2) //Erreur pas trop grave : le client s'est déco (géré par le receptionThread)
+                  catch (Exception e2)
                   {
                     println("Erreur pour le code 102 : " + e2.toString());
                   }
@@ -486,7 +484,7 @@ class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part 
           int index = ins.indexOf(in);
           switch(code)
           {
-          case 103:  //Les controles du perso
+          case 103:
             {
               byte type = in.readByte();
               switch(type)
@@ -507,27 +505,27 @@ class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part 
                 controles.get(index).left = in.readBoolean();
                 break;
 
-              case 5: //Attaque de base
+              case 5:
                 controles.get(index).A = in.readBoolean();
                 break;
 
-              case 6: //Competence
+              case 6:
                 controles.get(index).R = in.readBoolean();
                 break;
 
-              case 7: //Bouclier
+              case 7:
                 controles.get(index).E = in.readBoolean();
                 break;
               }
             }
             break;
-          case 105: //les rotations
+          case 105:
             personnages.get(index).angleX = in.readFloat();
             personnages.get(index).angleY = in.readFloat();
 
             synchronized (sockets)
             {
-              for (int j = 0; j < outs.size(); j++) // On prévient les autres
+              for (int j = 0; j < outs.size(); j++)
               {
                 try
                 {
@@ -548,7 +546,7 @@ class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part 
         }
         delay(10);
       }
-      catch (Exception e) //Exception == déconnexion
+      catch (Exception e)
       {
         print(e);
         synchronized (sockets)
@@ -561,14 +559,14 @@ class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part 
 
           synchronized(infos)
           {
-            for (int i = 0; i < outs.size(); i++) // On prévient les autres
+            for (int i = 0; i < outs.size(); i++)
             {
               try
               {
                 outs.get(i).writeByte(3);
                 outs.get(i).writeInt(index);
               }
-              catch (Exception e2) //Erreur pas trop grave : le client s'est déco (géré par le receptionThread)
+              catch (Exception e2)
               {
                 println("Erreur pour le code 3 : " + e2.toString());
               }
@@ -585,7 +583,7 @@ class ReceptionThread extends Thread //s'occupe de recevoir lesinfos de la part 
   }
 }
 
-String nomPerso(int nb) //Renvoie un string dépendant du type de perso donnée en argument
+String nomPerso(int nb)
 {
   switch( nb)
   {

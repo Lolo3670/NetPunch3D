@@ -6,9 +6,9 @@ abstract class Influent extends Acteur //Ce qui peut changer l'équation du pers
     toRemove = false;
   }
 
-  abstract public int collisionAvecPersonnage(Personnage perso, int tempsDebut, int tempsFin); //Quand est-ce qu'il y a collision ?
+  abstract public int collisionAvecPersonnage(Personnage perso, int tempsDebut, int tempsFin);
   
-  abstract public void nouvelleEquation(Personnage perso, ArrayList<Influent> influents, ArrayList<Personnage> personnages, int tempsDebut, int tempsFin); //Quand le terrain arrête ou quand le projectile touche
+  abstract public void nouvelleEquation(Personnage perso, ArrayList<Influent> influents, ArrayList<Personnage> personnages, int tempsDebut, int tempsFin);
 
   boolean toRemove = false;
 }

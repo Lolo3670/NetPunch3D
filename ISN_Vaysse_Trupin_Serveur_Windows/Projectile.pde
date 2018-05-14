@@ -6,7 +6,7 @@ abstract class Projectile extends Influent
   }  
 
   @Override
-    public void Rendu(int temps) //s'oriente avec le temps donc rendu différent
+    public void Rendu(int temps)
   {
     pushMatrix();
     Vecteur position = equation.calculPosition(temps);
@@ -28,11 +28,10 @@ abstract class Projectile extends Influent
     return -1;
   }
 
-  public void nouvelleEquation(Personnage perso, ArrayList<Influent> influents, ArrayList<Personnage> personnages, int tempsDebut, int tempsFin) //S'assure que c'est bien le premier projectile qui touche le premier personnage
+  public void nouvelleEquation(Personnage perso, ArrayList<Influent> influents, ArrayList<Personnage> personnages, int tempsDebut, int tempsFin)
   {
     if (!toRemove)
     {
-      /* On sait que c'est le premier projectile à toucher le perso, mais n'est-il pas intercepté avant ? */
       int tempsCalcul = 0, tempsMeilleur = -1, indexMeilleur = -1;
       for (int i = 0; i < personnages.size(); i++)
       {
@@ -41,11 +40,11 @@ abstract class Projectile extends Influent
         indexMeilleur = ((tempsMeilleur == -1) || ((tempsCalcul != -1) && (tempsCalcul < tempsMeilleur))) ? i : indexMeilleur;
       }
 
-      if (tempsMeilleur == tempsFin) //Le perso est bien celui qui se fait touché en premier par le premier proj
+      if (tempsMeilleur == tempsFin)
       {
         effetSurPersonnage(perso, tempsFin);
         toRemove = true;
-      } else //On a trouvé un perso qui se mange le proj avant => On calcul sa position pour être sûr qu'il ne se mange pas autre chose avant
+      } else
       {
         if (indexMeilleur != -1)
         {

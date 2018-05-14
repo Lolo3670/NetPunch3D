@@ -15,14 +15,14 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
   protected float rapidite; //en m/s
   protected float hauteurSaut; // en m/s
 
-  protected Vecteur AABB_negatif; //Bounding box pour les équations
+  protected Vecteur AABB_negatif;
   protected Vecteur AABB_positif;
 
   protected float scoreFrappe = 1;
   protected int score = 0;
   protected Personnage tueur = null;
 
-  protected ZoneMarche zoneMarche; //zone surlaquelle est le joueur
+  protected ZoneMarche zoneMarche;
 
   protected boolean bouclier = false;
 
@@ -42,35 +42,34 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
 
     for (int i = 0; i < influents.size(); i++)
     {
-      temps = influents.get(i).collisionAvecPersonnage(this, tempsDebut, tempsFin); //Test de collision avec tous les influents
+      temps = influents.get(i).collisionAvecPersonnage(this, tempsDebut, tempsFin);
       if (temps != -1) //Si j'ai un temps (sinon pas de modif =)
       {
-        indexMeilleur = ((temps < tempsMeilleur) || (tempsMeilleur == -1)) ? i : indexMeilleur; //Si on a un meilleur temps on change l'index
-        tempsMeilleur = ((temps < tempsMeilleur) || (tempsMeilleur == -1)) ? temps : tempsMeilleur; //Si on obtient un meilleur temps ou si il n'y a pas de meilleur temps.... on prend sinon on jette
+        indexMeilleur = ((temps < tempsMeilleur) || (tempsMeilleur == -1)) ? i : indexMeilleur;
+        tempsMeilleur = ((temps < tempsMeilleur) || (tempsMeilleur == -1)) ? temps : tempsMeilleur;
       }
     }
 
-    /*Test de la zone de marche => Si meilleur résultat on utilise son équation*/    //On cherche à savoir s'il sort de la zone de marche avant
     if (zoneMarche != null)
     {
       temps = zoneMarche.collisionAvecPersonnage(this, tempsDebut, tempsFin);
-      if (((temps < tempsMeilleur) || (tempsMeilleur == -1)) && (temps != -1)) //S'il la quitte avant
+      if (((temps < tempsMeilleur) || (tempsMeilleur == -1)) && (temps != -1))
       {
         zoneMarche.nouvelleEquation(this, influents, personnages, tempsDebut, temps);
-        actualiserPosition(influents, personnages, temps, tempsFin); //On relance le calcul pour d'autres collisions
+        actualiserPosition(influents, personnages, temps, tempsFin);
         tempsMeilleur = -1;
       }
     }
 
-    if ((indexMeilleur != -1) && (tempsMeilleur <= tempsFin) && (tempsMeilleur != -1)) //Si je trouve une solution et qui rentre dans les rangs va falloir changer l'équation.
+    if ((indexMeilleur != -1) && (tempsMeilleur <= tempsFin) && (tempsMeilleur != -1))
     {
       influents.get(indexMeilleur).nouvelleEquation(this, influents, personnages, tempsDebut, tempsMeilleur);
-      actualiserPosition(influents, personnages, tempsMeilleur, tempsFin); //On relance le calcul pour d'autres collisions
+      actualiserPosition(influents, personnages, tempsMeilleur, tempsFin);
     }
 
-    if (equation.calculPosition(tempsFin).y < -5) //si le perso va trop bas il meurt
+    if (equation.calculPosition(tempsFin).y < -5)
     {
-      setEquation(new EquationGravite(0, 0, 0, 0, 5, 0, tempsFin)); //on le remet au début
+      setEquation(new EquationGravite(0, 0, 0, 0, 5, 0, tempsFin));
       zoneMarche = null;
       if (tueur != null)
         tueur.score++;
@@ -79,9 +78,9 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
       scoreFrappe = 1.0f;
       bouclier = false;
 
-      synchronized (sockets) //notification des chgts
+      synchronized (sockets)
       {
-        for (int j = 0; j < outs.size(); j++) // On prévient les autres
+        for (int j = 0; j < outs.size(); j++)
         {
           try
           {
@@ -115,7 +114,7 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
 
   public boolean equationToSend = false;
 
-  public void setEquation(Equation m_equation) //change l'équation
+  public void setEquation(Equation m_equation)
   {
     equation = m_equation;
     equationToSend = true;
@@ -125,11 +124,9 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
 
   public void action(boolean avance, boolean recule, boolean gauche, boolean droite, boolean A, boolean E, boolean R, int temps) //Que fait le perso
   {
-    /* On change son équation */
     if (zoneMarche != null)
     {
       Vecteur position = equation.calculPosition(temps).add(zoneMarche.equation.calculPosition(temps).mult(-1));
-      /*Actualiser l'orientation*/
       Vecteur versOu = new Vecteur(cos(-angleY), 0, sin(-angleY));
       Vecteur vitesse = new Vecteur(0, 0, 0);
       if (avance)
@@ -145,7 +142,6 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
     }
 
 
-    /* Execution des attaques*/
     if (E)
     {
       chargerBouclier(temps);
@@ -154,7 +150,7 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
 
     if (R)
     {
-      if (chargerCompetence(temps)) //changer Comp return true si l'animation n'est pas changée
+      if (chargerCompetence(temps))
       {
         if (avance || recule)
           changeAnimation(byte(1), temps);
@@ -185,12 +181,12 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
   public void ejecter(float Vx, float Vy, float Vz, int temps, Personnage m_tueur, float m_scoreFrappe)
   {
     tueur = m_tueur;
-    if (bouclier) //s'il  un bouclier je l'enlève
+    if (bouclier)
     {
       bouclier = false;
       synchronized (sockets)
       {
-        for (int j = 0; j < outs.size(); j++) // On prévient les autres
+        for (int j = 0; j < outs.size(); j++)
         {
           try
           {
@@ -204,7 +200,7 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
           }
         }
       }
-    } else  //sinon changellent de l'équation => Equation gravité
+    } else
     {
       Vecteur newPosition = equation.calculPosition(temps); 
       Vecteur vitesseInitiale = equation.calculVitesse(temps);
@@ -216,7 +212,7 @@ abstract class Personnage extends Acteur //<>// //<>// //<>//
       scoreFrappe += m_scoreFrappe;
       synchronized (sockets)
       {
-        for (int j = 0; j < outs.size(); j++) // On prévient les autres
+        for (int j = 0; j < outs.size(); j++)
         {
           try
           {

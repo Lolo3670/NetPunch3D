@@ -373,12 +373,12 @@ class Cubeman extends Personnage
 
   public void chargerBouclier(int temps)
   {
-    if ((rechargeBouclier == -1) || (temps - rechargeBouclier > 20000)) //si le bouclier na jamais été lancé lancé ou si cela fait plus de 20 secondes
+    if ((rechargeBouclier == -1) || (temps - rechargeBouclier > 20000))
     {
       bouclier = true;
       synchronized (sockets)
       {
-        for (int j = 0; j < outs.size(); j++) // On prévient les autres
+        for (int j = 0; j < outs.size(); j++)
         {
           try
           {
@@ -398,7 +398,7 @@ class Cubeman extends Personnage
 
   public void chargerAttaqueDeBase(int temps)
   {
-    if ((rechargeAttaqueDeBase == -1) || ((temps - rechargeAttaqueDeBase) > 250)) //Tous les quarts de secondes un projectile est envoyé dans la direction de visée
+    if ((rechargeAttaqueDeBase == -1) || ((temps - rechargeAttaqueDeBase) > 250))
     {
       for (int i = 0; i < personnages.size(); i++)
       {
@@ -428,15 +428,15 @@ class Cubeman extends Personnage
 
   private int timerAttaqueSpeciale = 0;
   public boolean chargerCompetence(int temps) {
-    if ((rechargeCompetence == -1) || ((temps - rechargeCompetence) > 10000)) //temps de rehcarge 10 sec
+    if ((rechargeCompetence == -1) || ((temps - rechargeCompetence) > 10000))
     {
       rechargeCompetence = temps;
     }
 
-    if ((temps - rechargeCompetence) < 4000) //L'attaque dure 4 sec
+    if ((temps - rechargeCompetence) < 4000)
     {
       changeAnimation(byte(3), temps);
-      if ((temps - timerAttaqueSpeciale) > 1000) //Toutes les secondes durant, on balance un missile
+      if ((temps - timerAttaqueSpeciale) > 1000)
       {
         Vecteur visee = new Vecteur(cos(angleX) * cos(angleY), -sin(angleX), -cos(angleX) *  sin(angleY)).mult(8);
         Vecteur position = equation.calculPosition(temps);
@@ -444,11 +444,10 @@ class Cubeman extends Personnage
 
         synchronized (sockets)
         {
-          for (int j = 0; j < outs.size(); j++) // On prévient les autres
+          for (int j = 0; j < outs.size(); j++)
           {
             try
             {
-              /* Envoie du projectile test */
               outs.get(j).writeByte(8);
               outs.get(j).writeInt(201);
               outs.get(j).writeFloat(visee.x);
@@ -499,7 +498,7 @@ class ProjectileCompCubeman extends Projectile
     box(0.5);
   }
 
-  protected void effetSurPersonnage(Personnage perso, int temps) //ejecte tous les persos de la zone, comme la compétence de globulix
+  protected void effetSurPersonnage(Personnage perso, int temps)
   {
     for (int i = 0; i < personnages.size(); i++)
     {
@@ -519,9 +518,9 @@ class ProjectileCompCubeman extends Projectile
   @Override
     public int collisionAvecPersonnage(Personnage perso, int tempsDebut, int tempsFin)
   {
-    if ((equation.calculPosition(tempsDebut).y < -10) || (equation.calculPosition(tempsDebut).y > 10))
+    if ((tempsFin - equation.m_tempsDebut) > 2000)
     {
-      this.toRemove = true;
+      this.toRemove = true;      
       return -1;
     }
     if (perso == cubeman)

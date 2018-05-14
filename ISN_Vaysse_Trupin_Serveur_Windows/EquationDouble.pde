@@ -1,5 +1,3 @@
-//cf dossier
-
 class EquationDouble extends Equation
 {
   protected Equation equation1, equation2;

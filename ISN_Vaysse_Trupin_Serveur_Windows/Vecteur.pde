@@ -41,7 +41,7 @@ class Vecteur
     return new Vecteur(x + m_x, y + m_y, z + m_z);
   }
 
-  Vecteur axisToEulerAngles() //convertis le vecteur (rotation autour de l'axe décrit par celui-ci de 0°) en angle d'euler
+  Vecteur axisToEulerAngles()
   {
     if ((x == 0) && (z == 0) && (y == 0))
       return new Vecteur(0, 0, 0);

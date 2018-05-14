@@ -1,25 +1,23 @@
-final float DEMIG = -4.903325f;//-0.5g
+final float DEMIG = -4.903325f;
 final float G = 9.80665f;
-
-//Cf dossier
 
 abstract class Equation
 {
   public final int m_tempsDebut;
   public Vecteur origine;
 
-  Equation(float x, float y, float z, int tempsDebut) //temps depuis le début de la partie
+  Equation(float x, float y, float z, int tempsDebut)
   {
     m_tempsDebut = tempsDebut;
     origine = new Vecteur(x, y, z);
   }
 
-  public Vecteur calculPosition(float temps) //Convertie en temps depuis le début de l'équation + en seconde
+  public Vecteur calculPosition(float temps)
   {
     return calculInterne((temps - m_tempsDebut) / 1000.0f).add(origine);
   }
 
-  public Vecteur calculOrientation(float temps) //Notamment pour les projectile =)
+  public Vecteur calculOrientation(float temps)
   {
     return calculInterneOrientation((temps - m_tempsDebut) / 1000.0f);
   }
@@ -33,17 +31,17 @@ abstract class Equation
   abstract protected Vecteur calculInterneOrientation(float temps);
   abstract protected Vecteur calculInterneVitesse(float temps);
   
-  public int collisionXPositif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur) //La droite de l'objet tape dans la gauche de l'autre
+  public int collisionXPositif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur)
   {
     float a = debutCalcul - 1, b = finCalcul + 1;
 
-    if (((calculPosition(debutCalcul).x + AABB1_positif.x - equationPlan.calculPosition(debutCalcul).x - AABB2_negatif.x) * (calculPosition(finCalcul).x + AABB1_positif.x - equationPlan.calculPosition(finCalcul).x - AABB2_negatif.x)) > 0) //pas de changement de signe entre le début et la fin 
+    if (((calculPosition(debutCalcul).x + AABB1_positif.x - equationPlan.calculPosition(debutCalcul).x - AABB2_negatif.x) * (calculPosition(finCalcul).x + AABB1_positif.x - equationPlan.calculPosition(finCalcul).x - AABB2_negatif.x)) > 0) 
     {
-      return -1; //Pas de changement de signe => pas de collision
+      return -1;
     }
 
     float m;
-    while ( (b - a) > 0.1) //On test sur le descendant
+    while ( (b - a) > 0.1)
     {
       m = (a + b) /2;
       if (((calculPosition(a).x + AABB1_positif.x - equationPlan.calculPosition(a).x - AABB2_negatif.x) * (calculPosition(m).x + AABB1_positif.x - equationPlan.calculPosition(m).x - AABB2_negatif.x)) <= 0)
@@ -61,20 +59,20 @@ abstract class Equation
       return result;
     if (interieur)
       return result;
-    return -1; //Tous ces calculs pour rien :(
+    return -1;
   }
 
-  public int collisionXNegatif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur) //La gauche de l'objet tape dans la droite de l'autre
+  public int collisionXNegatif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur)
   {
     float a = debutCalcul - 1, b = finCalcul + 1;
 
-    if (((calculPosition(debutCalcul).x + AABB1_negatif.x - equationPlan.calculPosition(debutCalcul).x - AABB2_positif.x) * (calculPosition(finCalcul).x + AABB1_negatif.x - equationPlan.calculPosition(finCalcul).x - AABB2_positif.x)) > 0) //pas de changement de signe entre le début et la fin 
+    if (((calculPosition(debutCalcul).x + AABB1_negatif.x - equationPlan.calculPosition(debutCalcul).x - AABB2_positif.x) * (calculPosition(finCalcul).x + AABB1_negatif.x - equationPlan.calculPosition(finCalcul).x - AABB2_positif.x)) > 0) 
     {
-      return -1; //Pas de changement de signe => pas de collision
+      return -1;
     }
 
     float m;
-    while ( (b - a) > 0.1) //On test sur le descendant
+    while ( (b - a) > 0.1)
     {
       m = (a + b) /2;
       if (((calculPosition(a).x + AABB1_negatif.x - equationPlan.calculPosition(a).x - AABB2_positif.x) * (calculPosition(m).x + AABB1_negatif.x - equationPlan.calculPosition(m).x - AABB2_positif.x)) <= 0)
@@ -92,20 +90,20 @@ abstract class Equation
       return result;
     if (interieur)
       return result;
-    return -1; //Tous ces calculs pour rien :(
+    return -1;
   }
 
-  public int collisionYPositif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur) //La droite de l'objet tape dans la gauche de l'autre
+  public int collisionYPositif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur)
   {
     float a = debutCalcul - 1, b = finCalcul + 1;
 
-    if (((calculPosition(debutCalcul).y + AABB1_positif.y - equationPlan.calculPosition(debutCalcul).y - AABB2_negatif.y) * (calculPosition(finCalcul).y + AABB1_positif.y - equationPlan.calculPosition(finCalcul).y - AABB2_negatif.y)) > 0) //pas de changement de signe entre le début et la fin 
+    if (((calculPosition(debutCalcul).y + AABB1_positif.y - equationPlan.calculPosition(debutCalcul).y - AABB2_negatif.y) * (calculPosition(finCalcul).y + AABB1_positif.y - equationPlan.calculPosition(finCalcul).y - AABB2_negatif.y)) > 0) 
     {
-      return -1; //Pas de changement de signe => pas de collision
+      return -1;
     }
 
     float m;
-    while ( (b - a) > 0.1) //On test sur le descendant
+    while ( (b - a) > 0.1)
     {
       m = (a + b) /2;
       if (((calculPosition(a).y + AABB1_positif.y - equationPlan.calculPosition(a).y - AABB2_negatif.y) * (calculPosition(m).y + AABB1_positif.y - equationPlan.calculPosition(m).y - AABB2_negatif.y)) <= 0)
@@ -123,20 +121,20 @@ abstract class Equation
       return result;
     if (interieur)
       return result;
-    return -1; //Tous ces calculs pour rien :(
+    return -1;
   }
 
-  public int collisionYNegatif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur) //La gauche de l'objet tape dans la droite de l'autre
+  public int collisionYNegatif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur)
   {
     float a = debutCalcul - 1, b = finCalcul + 1;
 
-    if (((calculPosition(debutCalcul).y + AABB1_negatif.y - equationPlan.calculPosition(debutCalcul).y - AABB2_positif.y) * (calculPosition(finCalcul).y + AABB1_negatif.y - equationPlan.calculPosition(finCalcul).y - AABB2_positif.y)) > 0) //pas de changement de signe entre le début et la fin 
+    if (((calculPosition(debutCalcul).y + AABB1_negatif.y - equationPlan.calculPosition(debutCalcul).y - AABB2_positif.y) * (calculPosition(finCalcul).y + AABB1_negatif.y - equationPlan.calculPosition(finCalcul).y - AABB2_positif.y)) > 0) 
     {
-      return -1; //Pas de changement de signe => pas de collision
+      return -1;
     }
 
     float m;
-    while ( (b - a) > 0.1) //On test sur le descendant
+    while ( (b - a) > 0.1)
     {
       m = (a + b) /2;
       if (((calculPosition(a).y + AABB1_negatif.y - equationPlan.calculPosition(a).y - AABB2_positif.y) * (calculPosition(m).y + AABB1_negatif.y - equationPlan.calculPosition(m).y - AABB2_positif.y)) <= 0)
@@ -154,20 +152,20 @@ abstract class Equation
       return result;
     if (interieur)
       return result;
-    return -1; //Tous ces calculs pour rien :(
+    return -1;
   }
 
-  public int collisionZPositif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur) //La droite de l'objet tape dans la gauche de l'autre
+  public int collisionZPositif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur)
   {
     float a = debutCalcul - 1, b = finCalcul + 1;
 
-    if (((calculPosition(debutCalcul).z + AABB1_positif.z - equationPlan.calculPosition(debutCalcul).z - AABB2_negatif.z) * (calculPosition(finCalcul).z + AABB1_positif.z - equationPlan.calculPosition(finCalcul).z - AABB2_negatif.z)) > 0) //pas de changement de signe entre le début et la fin 
+    if (((calculPosition(debutCalcul).z + AABB1_positif.z - equationPlan.calculPosition(debutCalcul).z - AABB2_negatif.z) * (calculPosition(finCalcul).z + AABB1_positif.z - equationPlan.calculPosition(finCalcul).z - AABB2_negatif.z)) > 0) 
     {
-      return -1; //Pas de changement de signe => pas de collision
+      return -1;
     }
 
     float m;
-    while ( (b - a) > 0.1) //On test sur le descendant
+    while ( (b - a) > 0.1)
     {
       m = (a + b) /2;
       if (((calculPosition(a).z + AABB1_positif.z - equationPlan.calculPosition(a).z - AABB2_negatif.z) * (calculPosition(m).z + AABB1_positif.z - equationPlan.calculPosition(m).z - AABB2_negatif.z)) <= 0)
@@ -185,20 +183,20 @@ abstract class Equation
       return result;
     if (interieur)
       return result;
-    return -1; //Tous ces calculs pour rien :(
+    return -1;
   }
 
-  public int collisionZNegatif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur) //La gauche de l'objet tape dans la droite de l'autre
+  public int collisionZNegatif(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur)
   {
     float a = debutCalcul - 1, b = finCalcul + 1;
 
-    if (((calculPosition(debutCalcul).z + AABB1_negatif.z - equationPlan.calculPosition(debutCalcul).z - AABB2_positif.z) * (calculPosition(finCalcul).z + AABB1_negatif.z - equationPlan.calculPosition(finCalcul).z - AABB2_positif.z)) > 0) //pas de changement de signe entre le début et la fin 
+    if (((calculPosition(debutCalcul).z + AABB1_negatif.z - equationPlan.calculPosition(debutCalcul).z - AABB2_positif.z) * (calculPosition(finCalcul).z + AABB1_negatif.z - equationPlan.calculPosition(finCalcul).z - AABB2_positif.z)) > 0) 
     {
-      return -1; //Pas de changement de signe => pas de collision
+      return -1;
     }
 
     float m;
-    while ( (b - a) > 0.1) //On test sur le descendant
+    while ( (b - a) > 0.1)
     {
       m = (a + b) /2;
       if (((calculPosition(a).z + AABB1_negatif.z - equationPlan.calculPosition(a).z - AABB2_positif.z) * (calculPosition(m).z + AABB1_negatif.z - equationPlan.calculPosition(m).z - AABB2_positif.z)) <= 0)
@@ -216,10 +214,10 @@ abstract class Equation
       return result;
     if (interieur)
       return result;
-    return -1; //Tous ces calculs pour rien :(
+    return -1;
   }
 
-  public int collision(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur) //L'objet (considéré comme un point) cogne l'AABB
+  public int collision(final Vecteur AABB1_negatif, final Vecteur AABB1_positif, final Vecteur AABB2_negatif, final Vecteur AABB2_positif, final Equation equationPlan, final int debutCalcul, final int finCalcul, final boolean interieur)
   {
     int temps;
     int tempsMeilleur = -1;
